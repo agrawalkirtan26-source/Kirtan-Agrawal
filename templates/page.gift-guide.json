@@ -1,9 +1,30 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "layout": "gift-guide",
   "sections": {
     "tisso_banner": {
       "type": "tisso-banner",
-      "settings": {}
+      "settings": {
+        "logo_text": "TISSO VISON",
+        "tagline": "Find the ideal gift for your loved ones.",
+        "choose_gift_label": "Choose gift",
+        "choose_gift_link": "",
+        "heading": "The Gift Guide",
+        "body": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.",
+        "body_mobile": "Discover Joy: Your Ultimate Holiday Gift Destination.",
+        "shop_now_label": "Shop Now",
+        "shop_now_link": "",
+        "strapline": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL",
+        "strapline_mobile": "SUSTAINABLE, ETHICALLY MADE ACTIVEWEAR"
+      }
     },
     "tisso_grid": {
       "type": "tisso-grid",
@@ -11,6 +32,7 @@
         "product_1": {
           "type": "product_item",
           "settings": {
+            "product": "black-leather-bag",
             "hotspot_x": 59,
             "hotspot_y": 54
           }
@@ -18,6 +40,7 @@
         "product_2": {
           "type": "product_item",
           "settings": {
+            "product": "",
             "hotspot_x": 82,
             "hotspot_y": 50
           }
@@ -25,6 +48,7 @@
         "product_3": {
           "type": "product_item",
           "settings": {
+            "product": "",
             "hotspot_x": 60,
             "hotspot_y": 18
           }
@@ -32,6 +56,7 @@
         "product_4": {
           "type": "product_item",
           "settings": {
+            "product": "",
             "hotspot_x": 70,
             "hotspot_y": 16
           }
@@ -39,6 +64,7 @@
         "product_5": {
           "type": "product_item",
           "settings": {
+            "product": "",
             "hotspot_x": 49,
             "hotspot_y": 23
           }
@@ -46,6 +72,7 @@
         "product_6": {
           "type": "product_item",
           "settings": {
+            "product": "",
             "hotspot_x": 74,
             "hotspot_y": 37
           }
@@ -59,7 +86,10 @@
         "product_5",
         "product_6"
       ],
-      "settings": {}
+      "settings": {
+        "heading": "Tisso vison in the wild",
+        "auto_add_product": ""
+      }
     }
   },
   "order": [
