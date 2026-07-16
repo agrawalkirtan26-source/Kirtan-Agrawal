@@ -1,0 +1,646 @@
+{%- comment -%}
+  TISSO VISON Gift Guide — Grid section (from scratch).
+  Six product hotspot tiles + product popup with dynamic variants.
+{%- endcomment -%}
+
+{%- liquid
+  assign heading = section.settings.heading
+  assign auto_add_product = section.settings.auto_add_product
+  assign auto_add_variant_id = ''
+  if auto_add_product != blank
+    assign auto_add_variant_id = auto_add_product.selected_or_first_available_variant.id
+  endif
+
+  assign default_images = 'tisso-grid-1.png,tisso-grid-2.png,tisso-grid-3.png,tisso-grid-4.png,tisso-grid-5.png,tisso-grid-6.png' | split: ','
+-%}
+
+<section
+  class="tisso-grid"
+  id="tisso-grid"
+  data-tisso-grid
+  data-cart-add-url="{{ routes.cart_add_url }}.js"
+  data-money-format="{{ shop.money_format | escape }}"
+  data-auto-add-variant-id="{{ auto_add_variant_id }}"
+  data-auto-add-product-id="8278555197529"
+>
+  {%- if heading != blank -%}
+    <h2 class="tisso-grid__heading">{{ heading | escape }}</h2>
+  {%- endif -%}
+
+  <div class="tisso-grid__tiles">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign product = block.settings.product
+        assign custom_image = block.settings.image
+        assign hotspot_x = block.settings.hotspot_x | default: 70
+        assign hotspot_y = block.settings.hotspot_y | default: 20
+        assign index0 = forloop.index0
+        assign fallback_asset = default_images[index0]
+
+        if custom_image != blank
+          assign tile_image = custom_image
+        elsif product != blank and product.featured_media
+          assign tile_image = product.featured_media.preview_image
+        else
+          assign tile_image = null
+        endif
+
+        if product != blank
+          assign tile_alt = product.title
+        else
+          assign tile_alt = heading
+        endif
+      -%}
+
+      <article
+        class="tisso-grid__tile"
+        {{ block.shopify_attributes }}
+        data-tisso-tile
+        data-block-id="{{ block.id }}"
+        {% if product != blank %}
+          data-product-id="{{ product.id }}"
+        {% endif %}
+      >
+        <div class="tisso-grid__media">
+          {%- if tile_image != blank -%}
+            {{
+              tile_image
+              | image_url: width: 1200
+              | image_tag:
+                class: 'tisso-grid__img',
+                loading: 'lazy',
+                widths: '340, 500, 700, 1000',
+                sizes: '(max-width: 749px) 50vw, 33vw',
+                alt: tile_alt
+            }}
+          {%- else -%}
+            <img
+              class="tisso-grid__img"
+              src="{{ fallback_asset | asset_url }}"
+              alt="{% if product != blank %}{{ product.title | escape }}{% else %}Product {{ forloop.index }}{% endif %}"
+              width="433"
+              height="444"
+              loading="lazy"
+            >
+          {%- endif -%}
+
+          {%- if product != blank -%}
+            <button
+              type="button"
+              class="tisso-grid__hotspot"
+              style="left: {{ hotspot_x }}%; top: {{ hotspot_y }}%;"
+              aria-label="Quick view {{ product.title | escape }}"
+              data-tisso-hotspot
+              data-product-handle="{{ product.handle }}"
+            >
+              <img
+                src="{{ 'tisso-hotspot.svg' | asset_url }}"
+                alt=""
+                width="22"
+                height="22"
+                class="tisso-grid__hotspot-icon"
+              >
+            </button>
+
+            <script type="application/json" data-tisso-product-json>
+              {
+                "id": {{ product.id | json }},
+                "title": {{ product.title | json }},
+                "handle": {{ product.handle | json }},
+                "description": {{ product.description | strip_html | truncate: 220 | json }},
+                "featured_image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 600 | json }}{% else %}null{% endif %},
+                "options": {{ product.options_with_values | json }},
+                "variants": [
+                  {%- for variant in product.variants -%}
+                    {
+                      "id": {{ variant.id | json }},
+                      "title": {{ variant.title | json }},
+                      "available": {{ variant.available | json }},
+                      "price": {{ variant.price | json }},
+                      "price_formatted": {{ variant.price | money | json }},
+                      "compare_at_price": {{ variant.compare_at_price | json }},
+                      "option1": {{ variant.option1 | json }},
+                      "option2": {{ variant.option2 | json }},
+                      "option3": {{ variant.option3 | json }},
+                      "options": {{ variant.options | json }},
+                      "featured_image": {% if variant.featured_image %}{{ variant.featured_image | image_url: width: 600 | json }}{% else %}null{% endif %}
+                    }{% unless forloop.last %},{% endunless %}
+                  {%- endfor -%}
+                ]
+              }
+            </script>
+          {%- else -%}
+            <span
+              class="tisso-grid__hotspot tisso-grid__hotspot--disabled"
+              style="left: {{ hotspot_x }}%; top: {{ hotspot_y }}%;"
+              aria-hidden="true"
+            >
+              <img
+                src="{{ 'tisso-hotspot.svg' | asset_url }}"
+                alt=""
+                width="22"
+                height="22"
+                class="tisso-grid__hotspot-icon"
+              >
+            </span>
+          {%- endif -%}
+        </div>
+      </article>
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} Product popup {%- endcomment -%}
+  <div
+    class="tisso-popup"
+    data-tisso-popup
+    hidden
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tisso-popup-title-{{ section.id }}"
+  >
+    <div class="tisso-popup__backdrop" data-tisso-popup-close></div>
+    <div class="tisso-popup__dialog">
+      <button
+        type="button"
+        class="tisso-popup__close"
+        aria-label="Close"
+        data-tisso-popup-close
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+
+      <div class="tisso-popup__top">
+        <div class="tisso-popup__media">
+          <img
+            class="tisso-popup__img"
+            data-tisso-popup-image
+            src=""
+            alt=""
+            width="120"
+            height="140"
+          >
+        </div>
+        <div class="tisso-popup__summary">
+          <h3 class="tisso-popup__title" id="tisso-popup-title-{{ section.id }}" data-tisso-popup-title></h3>
+          <p class="tisso-popup__price" data-tisso-popup-price></p>
+          <p class="tisso-popup__desc" data-tisso-popup-desc></p>
+        </div>
+      </div>
+
+      <div class="tisso-popup__options" data-tisso-popup-options></div>
+
+      <button type="button" class="tisso-popup__atc" data-tisso-add-to-cart>
+        <span class="tisso-popup__atc-label" data-tisso-atc-label>Add to cart</span>
+        <span class="tisso-popup__atc-arrow" aria-hidden="true"></span>
+      </button>
+
+      <p class="tisso-popup__status" data-tisso-popup-status role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .tisso-grid {
+    --tisso-yellow: #fff544;
+    --tisso-black: #000000;
+    --tisso-white: #ffffff;
+    --tisso-muted: #333333;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 40px 16px 64px;
+    background: var(--tisso-white);
+  }
+
+  .tisso-grid__heading {
+    margin: 0 0 20px;
+    text-align: center;
+    font-family: 'Lustria', serif;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.2;
+    color: var(--tisso-black);
+  }
+
+  .tisso-grid__tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+    max-width: 342px;
+    margin: 0 auto;
+  }
+
+  .tisso-grid__tile {
+    margin: 0;
+  }
+
+  .tisso-grid__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 169 / 186.42;
+    overflow: hidden;
+    background: #f0f0f0;
+  }
+
+  .tisso-grid__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .tisso-grid__hotspot {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 2;
+    transition: transform 0.2s ease;
+  }
+
+  .tisso-grid__hotspot:hover,
+  .tisso-grid__hotspot:focus-visible {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+
+  .tisso-grid__hotspot:focus-visible {
+    outline: 2px solid var(--tisso-black);
+    outline-offset: 2px;
+  }
+
+  .tisso-grid__hotspot--disabled {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .tisso-grid__hotspot-icon {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Popup */
+  .tisso-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .tisso-popup[hidden] {
+    display: none;
+  }
+
+  .tisso-popup__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .tisso-popup__dialog {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 311px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    background: var(--tisso-white);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+    padding: 36px 20px 25px;
+  }
+
+  .tisso-popup__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--tisso-black);
+  }
+
+  .tisso-popup__top {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .tisso-popup__media {
+    width: 120px;
+    height: 140px;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .tisso-popup__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .tisso-popup__title {
+    margin: 0;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.2;
+    color: var(--tisso-black);
+  }
+
+  .tisso-popup__price {
+    margin: 8px 0 0;
+    font-family: 'Lustria', serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.2;
+    color: var(--tisso-black);
+  }
+
+  .tisso-popup__desc {
+    margin: 10px 0 0;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.1;
+    letter-spacing: -0.14px;
+    color: var(--tisso-black);
+  }
+
+  .tisso-popup__options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .tisso-popup__option {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tisso-popup__option-label {
+    margin: 0;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.3;
+    color: var(--tisso-muted);
+  }
+
+  .tisso-popup__segments {
+    display: grid;
+    width: 100%;
+    border: 0.5px solid var(--tisso-black);
+  }
+
+  .tisso-popup__segment {
+    appearance: none;
+    border: 0;
+    border-right: 0.5px solid var(--tisso-black);
+    background: var(--tisso-white);
+    min-height: 40px;
+    padding: 8px 12px;
+    font-family: 'Jost', sans-serif;
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: -0.36px;
+    text-transform: capitalize;
+    text-align: left;
+    color: var(--tisso-black);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .tisso-popup__segment:last-child {
+    border-right: 0;
+  }
+
+  .tisso-popup__segment.is-selected {
+    background: var(--tisso-black);
+    color: var(--tisso-white);
+  }
+
+  .tisso-popup__select-wrap {
+    position: relative;
+    width: 100%;
+    border: 0.5px solid var(--tisso-black);
+  }
+
+  .tisso-popup__select {
+    appearance: none;
+    width: 100%;
+    min-height: 40px;
+    padding: 10px 40px 10px 14px;
+    border: 0;
+    background: transparent;
+    font-family: 'Jost', sans-serif;
+    font-size: 16px;
+    letter-spacing: -0.32px;
+    color: var(--tisso-black);
+    cursor: pointer;
+  }
+
+  .tisso-popup__select-wrap::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid var(--tisso-black);
+    border-bottom: 1px solid var(--tisso-black);
+    transform: translateY(-65%) rotate(45deg);
+    pointer-events: none;
+  }
+
+  .tisso-popup__atc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 45px;
+    padding: 12px 20px;
+    border: 0;
+    border-radius: 0;
+    background: var(--tisso-black);
+    color: var(--tisso-white);
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20.48px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+  }
+
+  .tisso-popup__atc:hover:not(:disabled),
+  .tisso-popup__atc:focus-visible:not(:disabled) {
+    background: var(--tisso-yellow);
+    color: var(--tisso-black);
+    transform: translateY(-1px);
+  }
+
+  .tisso-popup__atc:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .tisso-popup__atc-arrow {
+    display: block;
+    width: 34px;
+    height: 1px;
+    background: currentColor;
+    position: relative;
+    transition: transform 0.25s ease;
+  }
+
+  .tisso-popup__atc-arrow::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-right: 1px solid currentColor;
+    border-top: 1px solid currentColor;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .tisso-popup__atc:hover .tisso-popup__atc-arrow {
+    transform: translateX(4px);
+  }
+
+  .tisso-popup__status {
+    margin: 10px 0 0;
+    min-height: 1.2em;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    line-height: 1.3;
+    text-align: center;
+    color: var(--tisso-muted);
+  }
+
+  .tisso-popup__status.is-error {
+    color: #b00020;
+  }
+
+  .tisso-popup__status.is-success {
+    color: #0a7a32;
+  }
+
+  @media screen and (min-width: 750px) {
+    .tisso-grid {
+      padding: 90px 51.5px 80px;
+    }
+
+    .tisso-grid__heading {
+      margin-bottom: 30px;
+      text-align: left;
+      font-size: 36px;
+    }
+
+    .tisso-grid__tiles {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      max-width: 1339px;
+    }
+
+    .tisso-grid__media {
+      aspect-ratio: 433 / 444;
+    }
+
+    .tisso-grid__hotspot {
+      width: 22px;
+      height: 22px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "TISSO Grid",
+  "tag": "section",
+  "class": "tisso-grid-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tisso vison in the wild"
+    },
+    {
+      "type": "product",
+      "id": "auto_add_product",
+      "label": "Soft Winter Jacket (auto-add)",
+      "info": "When a product with Black + Medium is added to cart, this product is also added. Use Soft Winter Jacket (product ID 8278555197529)."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_item",
+      "name": "Product hotspot",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Tile image override"
+        },
+        {
+          "type": "range",
+          "id": "hotspot_x",
+          "label": "Hotspot horizontal position",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "default": 70
+        },
+        {
+          "type": "range",
+          "id": "hotspot_y",
+          "label": "Hotspot vertical position",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "unit": "%",
+          "default": 20
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "TISSO Grid",
+      "blocks": [
+        { "type": "product_item", "settings": { "hotspot_x": 59, "hotspot_y": 54 } },
+        { "type": "product_item", "settings": { "hotspot_x": 82, "hotspot_y": 50 } },
+        { "type": "product_item", "settings": { "hotspot_x": 60, "hotspot_y": 18 } },
+        { "type": "product_item", "settings": { "hotspot_x": 70, "hotspot_y": 16 } },
+        { "type": "product_item", "settings": { "hotspot_x": 49, "hotspot_y": 23 } },
+        { "type": "product_item", "settings": { "hotspot_x": 74, "hotspot_y": 37 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

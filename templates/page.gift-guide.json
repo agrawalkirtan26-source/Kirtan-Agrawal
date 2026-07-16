@@ -1,0 +1,69 @@
+{
+  "layout": "gift-guide",
+  "sections": {
+    "tisso_banner": {
+      "type": "tisso-banner",
+      "settings": {}
+    },
+    "tisso_grid": {
+      "type": "tisso-grid",
+      "blocks": {
+        "product_1": {
+          "type": "product_item",
+          "settings": {
+            "hotspot_x": 59,
+            "hotspot_y": 54
+          }
+        },
+        "product_2": {
+          "type": "product_item",
+          "settings": {
+            "hotspot_x": 82,
+            "hotspot_y": 50
+          }
+        },
+        "product_3": {
+          "type": "product_item",
+          "settings": {
+            "hotspot_x": 60,
+            "hotspot_y": 18
+          }
+        },
+        "product_4": {
+          "type": "product_item",
+          "settings": {
+            "hotspot_x": 70,
+            "hotspot_y": 16
+          }
+        },
+        "product_5": {
+          "type": "product_item",
+          "settings": {
+            "hotspot_x": 49,
+            "hotspot_y": 23
+          }
+        },
+        "product_6": {
+          "type": "product_item",
+          "settings": {
+            "hotspot_x": 74,
+            "hotspot_y": 37
+          }
+        }
+      },
+      "block_order": [
+        "product_1",
+        "product_2",
+        "product_3",
+        "product_4",
+        "product_5",
+        "product_6"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "tisso_banner",
+    "tisso_grid"
+  ]
+}
