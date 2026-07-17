@@ -332,7 +332,6 @@
     letter-spacing: 0;
     cursor: pointer;
     overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.3s ease, color 0.3s ease;
   }
 
   .tisso-banner__btn-label {
@@ -368,29 +367,29 @@
     min-width: 207px;
   }
 
-  .tisso-banner__btn--black {
+  .tisso-banner__btn--yellow:visited {
+    color: var(--tisso-black);
+  }
+
+  .tisso-banner__btn--black,
+  .tisso-banner__btn--black:visited {
     background: var(--tisso-black);
     color: var(--tisso-white);
     min-width: 220px;
     min-height: 50px;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   }
 
   .tisso-banner__btn--black:hover,
   .tisso-banner__btn--black:focus-visible {
     background: var(--tisso-yellow);
     color: var(--tisso-black);
-    transform: translateY(-1px);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
   }
 
-  .tisso-banner__btn--yellow:hover,
-  .tisso-banner__btn--yellow:focus-visible {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-
-  .tisso-banner__btn:hover .tisso-banner__btn-arrow,
-  .tisso-banner__btn:focus-visible .tisso-banner__btn-arrow {
+  .tisso-banner__btn--black:hover .tisso-banner__btn-arrow,
+  .tisso-banner__btn--black:focus-visible .tisso-banner__btn-arrow {
     transform: translateX(6px);
   }
 
