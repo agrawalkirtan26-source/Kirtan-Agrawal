@@ -361,14 +361,20 @@
     transform: translateY(-50%) rotate(45deg);
   }
 
-  .tisso-banner__btn--yellow {
+  .tisso-banner__btn--yellow,
+  .tisso-banner__btn--yellow:visited {
     background: var(--tisso-yellow);
     color: var(--tisso-black);
     min-width: 207px;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .tisso-banner__btn--yellow:visited {
-    color: var(--tisso-black);
+  /* Choose Gift hover: invert to black + white text, arrow slides */
+  .tisso-banner__btn--yellow:hover,
+  .tisso-banner__btn--yellow:focus-visible {
+    background: var(--tisso-black);
+    color: var(--tisso-white);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
   }
 
   .tisso-banner__btn--black,
@@ -388,6 +394,8 @@
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
   }
 
+  .tisso-banner__btn--yellow:hover .tisso-banner__btn-arrow,
+  .tisso-banner__btn--yellow:focus-visible .tisso-banner__btn-arrow,
   .tisso-banner__btn--black:hover .tisso-banner__btn-arrow,
   .tisso-banner__btn--black:focus-visible .tisso-banner__btn-arrow {
     transform: translateX(6px);
